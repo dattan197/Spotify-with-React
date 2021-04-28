@@ -1,0 +1,40 @@
+*{
+    box-sizing: border-box;
+}
+
+html{
+    font-size: 62.5%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+.container {
+    padding: 0 20px;
+    @include breakpoint(tablet){
+        padding: 0 50px;
+    }
+    @include breakpoint(desktop){
+        padding: 0 100px;
+    }
+}
+
+.d-flex{
+    display: flex;
+}
+
+.btn{
+    color: $primary-color;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 5px 20px;
+    border: 1px solid $secondary-color;
+    border-radius: 100px;
+    transition: all .3s;
+    &:hover{
+        color: rgba(0,0,0,.8);
+        background: $secondary-color;
+    }
+    @include breakpoint(tablet){
+        padding: 10px 30px;
+    }
+}
