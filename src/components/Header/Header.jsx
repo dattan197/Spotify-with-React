@@ -1,15 +1,13 @@
 import "./header.scss";
 
-const Header = ({ toggleSidebar }) => {
+const Header = ({ toggleSidebar, open }) => {
   return (
     <header id="header" className="container">
       <i className="fab fa-spotify" />
-      <div className="login">
-        <a className="btn" href="#">
-          Avatar
-        </a>
+      <div className="search">
+        <input className="search-bar" type="text" name="" id="" placeholder="Search here..." />
       </div>
-      <div id="nav-icon" onClick={toggleSidebar}>
+      <div id="nav-icon" onClick={toggleSidebar} className={open ? "open" : ""}>
         <span />
         <span />
         <span />

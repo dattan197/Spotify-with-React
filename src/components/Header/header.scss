@@ -1,5 +1,6 @@
 @import "../../sass/variables";
 @import "../../sass/mixin";
+
 #header {
   position: fixed;
   top: 0;
@@ -12,14 +13,24 @@
   color: $primary-color;
   font-size: $font-small;
   z-index: 5;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, 0.5);
   i {
     font-size: 3.5rem;
     flex: 1;
   }
-  .login {
-    flex: 1;
+  .search {
+    flex: 2;
     display: flex;
     justify-content: center;
+    .search-bar {
+      width: 80%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      padding: 8px 20px;
+      outline: none;
+      color: $secondary-color;
+      font-size: $font-medium;
+    }
   }
   #nav-icon {
     flex: 1;
@@ -54,6 +65,7 @@
       }
     }
   }
+  
   #nav-icon.open span:nth-child(1) {
     top: 50%;
     transform: rotate(135deg);

@@ -1,0 +1,43 @@
+@import "../../sass/variables";
+@import "../../sass/mixin";
+
+#audio-player {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    //padding: 15px 0;
+    height: 70px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    .player__wrapper {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      button {
+        color: $primary-color;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: $font-medium;
+        &:hover {
+          cursor: pointer;
+          opacity: 0.7;
+        }
+      }
+      button + button {
+        margin-left: 25px;
+      }
+      .btn-play,
+      .btn-pause {
+        font-size: 3.5rem;
+      }
+    }
+    @include breakpoint(tablet) {
+      .player__wrapper {
+        button + button {
+          margin-left: 40px;
+        }
+      }
+    }
+  }

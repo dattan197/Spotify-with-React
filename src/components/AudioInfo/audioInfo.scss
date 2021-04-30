@@ -1,0 +1,79 @@
+@import "../../sass/variables";
+@import "../../sass/mixin";
+
+#audio-info {
+  //margin-top: 0px;
+  padding: 20px 0;
+  .audio-info__wrapper {
+    .title {
+      height: 100%;
+      h1 {
+        font-size: 10vw;
+        color: $primary-color;
+      }
+    }
+    .image {
+      padding: 30px 0 0 0;
+      .image__wrapper {
+        display: flex;
+        justify-content: center;
+        .audio-img {
+          width: 300px;
+          height: auto;
+          border-radius: 0 20px;
+          box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+  }
+  @include breakpoint(phablet) {
+    .audio-info__wrapper {
+      .title {
+        h1 {
+          font-size: 4rem;
+        }
+      }
+    }
+  }
+  @include breakpoint(tablet) {
+    .audio-info__wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-height: 400px;
+      .title {
+        flex: 1;
+        h1 {
+          font-size: 6rem;
+        }
+      }
+      .image {
+        flex: 1;
+        .image__wrapper {
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+    }
+  }
+  @include breakpoint(desktop) {
+    .audio-info__wrapper {
+      .title {
+        flex: 2;
+        h1 {
+          font-size: 8rem;
+          max-width: 800px;
+        }
+      }
+      .image {
+        .image__wrapper {
+          .audio-img {
+            width: 100%;
+            height: 400px !important;
+            object-fit: cover;
+          }
+        }
+      }
+    }
+  }
+}

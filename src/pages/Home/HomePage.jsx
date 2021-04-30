@@ -1,111 +1,66 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+// Library
+//import SpotifyPlayer from "react-spotify-web-playback";
 // Components
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
-
+import NewReleases from "../../components/NewReleases/NewReleases";
+import Player from "../../components/Player/Player";
+import AudioInfo from "../../components/AudioInfo/AudioInfo";
+// Redux-actions
+import { getNewRelease_Request } from "../../redux/actions/BrowseAction";
 // Assets
 import background from "../../assets/background.jpg";
 
-const HomePage = () => {
-  // state to trigger open sidebar
-  const [open, setOpen] = useState(false);
+const HomePage = ({ token }) => {
+  const dispatch = useDispatch();
+
+  const [open, setOpen] = useState(false); // state to trigger open sidebar
+
+  const [loading, setLoading] = useState(true); // state to set loading
+
+  const [image, setImage] = useState(background); // state change image
+
+  const [title, setTitle] = useState("Welcome to my Music Manager"); // state change title
+
+  const newAlbums = useSelector((state) => state.BrowseReducer.albums);
 
   function toggleSidebar() {
-    setOpen((currOpen) => !currOpen);
+    setOpen((_open) => !_open);
   }
+
+  function handleChangeImage(img) {
+    setImage((_img) => (_img = img));
+  }
+
+  function handleChangeTitle(title) {
+    setTitle((_title) => (_title = title));
+  }
+
+  function handleSeclectAlbum(album) {
+    handleChangeImage(album?.images[0]?.url);
+    handleChangeTitle(album?.name);
+  }
+
+  useEffect(() => {
+    // request API to get new releases
+    dispatch(getNewRelease_Request(setLoading, token));
+  }, [token]);
 
   return (
     <>
-      <img className="background" src={background} alt="background-img" />
+      <img className="background" src={image} alt="background-img" />
       <div className="filter" />
       <main id="main">
-        <Header toggleSidebar={toggleSidebar} />
-        <section id="audio-info">
-          <div className="audio-info__wrapper container">
-            <div className="title">
-              <h1>Higher Ground ft. Naomi Wild</h1>
-            </div>
-            <div className="image">
-              <div className="image__wrapper">
-                <img src={background} alt="audio-img" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="audio-list">
-          <div className="container d-flex">
-            <div className="playlist">
-              <div>
-                <h3>Playlist</h3>
-              </div>
-              <div className="list__wrapper">
-                <ul className="list">
-                  <li className="list-item">
-                    <img
-                      className="audio-img"
-                      src={background}
-                      alt="song-img"
-                    />
-                    <p>
-                      <span>Song</span> name
-                    </p>
-                  </li>
-                  <li className="list-item">
-                    <img
-                      className="audio-img"
-                      src={background}
-                      alt="song-img"
-                    />
-                    <p>
-                      <span>Song</span> name
-                    </p>
-                  </li>
-                  <li className="list-item">
-                    <img
-                      className="audio-img"
-                      src={background}
-                      alt="song-img"
-                    />
-                    <p>
-                      <span>Song</span> name
-                    </p>
-                  </li>
-                  <li className="list-item">
-                    <img
-                      className="audio-img"
-                      src={background}
-                      alt="song-img"
-                    />
-                    <p>
-                      <span>Song</span> name
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section id="audio-player">
-          <div className="player__wrapper container">
-            <audio id="player">
-              <source src="https://p.scdn.co/mp3-preview/01bb2a6c9a89c05a4300aea427241b1719a26b06" />
-            </audio>
-            <button className="btn-previous">
-              <i className="fa fa-backward" />
-            </button>
-            <button className="btn-play">
-              <i className="fa fa-play" />
-            </button>
-            <button className="btn-pause">
-              <i className="fa fa-pause" />
-            </button>
-            <button className="btn-next">
-              <i className="fa fa-forward" />
-            </button>
-          </div>
-        </section>
+        <Header toggleSidebar={toggleSidebar} open={open} />
+        <AudioInfo title={title} image={image} />
+        <NewReleases newAlbums={newAlbums} loading={loading} handleSeclectAlbum={handleSeclectAlbum} />
+        <Player />
+        {/* <SpotifyPlayer 
+          token={token}
+          uris={["spotify:album:7qKY8n8wPUizIo2bfSWUEB"]}
+        /> */}
       </main>
       <Sidebar open={open} />
     </>

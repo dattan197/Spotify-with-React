@@ -1,0 +1,1 @@
+export const get_new_release = 'GET_NEW_RELEASE';

@@ -7,6 +7,9 @@ const scope = [
   "user-top-read",
   "playlist-read-private",
   "playlist-modify-private",
+  "streaming",
+  "user-read-email",
+  "user-read-private",
 ];
 const redirect_uri = "http://localhost:3000";
 
@@ -15,10 +18,10 @@ export const loginURL = `https://accounts.spotify.com/authorize?response_type=${
 )}&redirect_uri=${redirect_uri}&show_dialog=true`;
 
 export function getAccessTokenFormURL() {
-  const tokenObj = window.location.hash.substring(1).split("&").reduce((initial,item)=>{
-      const key = item.split('=');
-      initial[key[0]] = decodeURIComponent(key[1]);
-      return initial;
-  },{});
+  const tokenObj = window.location.hash.substring(1).split("&").reduce((initial, item) => {
+    const key = item.split('=');
+    initial[key[0]] = decodeURIComponent(key[1]);
+    return initial;
+  }, {});
   return tokenObj?.access_token;
 }
