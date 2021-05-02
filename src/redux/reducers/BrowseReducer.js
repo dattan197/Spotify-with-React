@@ -5,9 +5,11 @@ const initialState = {
 };
 
 const BrowseReducer = (state = initialState, action) => {
+  //console.log(action);
   switch (action.type) {
-    case get_new_release:
-      return { ...state, albums: action.newRelease };
+    case 'GET_NEW_RELEASES':
+      //console.log(action.newReleases);
+      return { ...state, albums: action.newReleases };
     default:
       return state;
   }

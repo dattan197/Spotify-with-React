@@ -1,3 +1,4 @@
+import LogOut from "../LogOut/LogOut";
 import "./header.scss";
 
 const Header = ({ toggleSidebar, open }) => {
@@ -5,7 +6,13 @@ const Header = ({ toggleSidebar, open }) => {
     <header id="header" className="container">
       <i className="fab fa-spotify" />
       <div className="search">
-        <input className="search-bar" type="text" name="" id="" placeholder="Search here..." />
+        <input
+          className="search-bar"
+          type="text"
+          name=""
+          id=""
+          placeholder="Search here..."
+        />
       </div>
       <div id="nav-icon" onClick={toggleSidebar} className={open ? "open" : ""}>
         <span />
@@ -14,9 +21,7 @@ const Header = ({ toggleSidebar, open }) => {
       </div>
       <nav id="nav-bar">
         <ul className="nav-list">
-          <li className="list-item">Home</li>
-          <li className="list-item">About</li>
-          <li className="list-item">Logout</li>
+          <LogOut />
         </ul>
       </nav>
     </header>

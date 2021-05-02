@@ -9,25 +9,23 @@ import "./app.scss";
 //import { accessToken } from "./config/config";
 // Spotify API
 import SpotifyWebApi from "spotify-web-api-js";
+import { useDispatch, useSelector } from "react-redux";
 
-const spotifyApi = new SpotifyWebApi();
 
 function App() {
-  const [token, setToken] = useState(null);
+
+  const token = useSelector((state) => state.UserReducer.token);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let _token = getAccessTokenFormURL();
     if (!_token) return;
-    setToken((token) => (token = _token));
-    spotifyApi.setAccessToken(_token);
     //window.history.pushState({}, null, "/");
-    spotifyApi
-      .getMe()
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-    return () => {
-      setToken(null);
-    };
+    dispatch({
+      type: "SET_TOKEN",
+      _token,
+    });
   }, []);
 
   return token ? <HomePage token={token} /> : <Login />;

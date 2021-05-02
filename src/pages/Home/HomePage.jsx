@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// Library
-//import SpotifyPlayer from "react-spotify-web-playback";
+
+// Packages
+import SpotifyWebApi from "spotify-web-api-js";
+
 // Components
 import Header from "../../components/Header/Header";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import NewReleases from "../../components/NewReleases/NewReleases";
+import MyPlayList from "../../components/NewReleases/MyPlayList";
 import Player from "../../components/Player/Player";
 import AudioInfo from "../../components/AudioInfo/AudioInfo";
-// Redux-actions
-import { getNewRelease_Request } from "../../redux/actions/BrowseAction";
+
 // Assets
 import background from "../../assets/background.jpg";
+
+const spotifyApi = new SpotifyWebApi();
 
 const HomePage = ({ token }) => {
   const dispatch = useDispatch();
@@ -26,27 +29,50 @@ const HomePage = ({ token }) => {
 
   const newAlbums = useSelector((state) => state.BrowseReducer.albums);
 
+  const user = useSelector((state) => state.UserReducer.user);
+
   function toggleSidebar() {
     setOpen((_open) => !_open);
   }
 
-  function handleChangeImage(img) {
-    setImage((_img) => (_img = img));
-  }
+  useEffect(() => {
+    spotifyApi.setAccessToken(token);
+    // get new releases
+    spotifyApi
+      .getNewReleases({ offset: 1, limit: 20 })
+      .then((res) => {
+        dispatch({
+          type: "GET_NEW_RELEASES",
+          newReleases: res?.albums?.items,
+        });
+        setLoading(false);
+      })
+      .catch((err) => console.error(err));
 
-  function handleChangeTitle(title) {
-    setTitle((_title) => (_title = title));
-  }
-
-  function handleSeclectAlbum(album) {
-    handleChangeImage(album?.images[0]?.url);
-    handleChangeTitle(album?.name);
-  }
+    // get user info
+    spotifyApi
+      .getMe()
+      .then((res) => {
+        dispatch({
+          type: "GET_USER",
+          user: res,
+        });
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   useEffect(() => {
-    // request API to get new releases
-    dispatch(getNewRelease_Request(setLoading, token));
-  }, [token]);
+    if (user == null) return;
+    spotifyApi
+      .getUserPlaylists(user.id)
+      .then((res) =>
+        dispatch({
+          type: "GET_PLAYLISTS",
+          playlists: res?.items,
+        })
+      )
+      .catch((err) => console.error(err));
+  }, [user]);
 
   return (
     <>
@@ -55,7 +81,13 @@ const HomePage = ({ token }) => {
       <main id="main">
         <Header toggleSidebar={toggleSidebar} open={open} />
         <AudioInfo title={title} image={image} />
-        <NewReleases newAlbums={newAlbums} loading={loading} handleSeclectAlbum={handleSeclectAlbum} />
+        <MyPlayList
+          newAlbums={newAlbums}
+          loading={loading}
+          spotifyApi={spotifyApi}
+          setImage={setImage}
+          setTitle={setTitle}
+        />
         <Player />
         {/* <SpotifyPlayer 
           token={token}
