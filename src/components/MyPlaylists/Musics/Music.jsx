@@ -1,9 +1,9 @@
-const Music = ({ track, handleSelectMusic }) => {
+const Music = ({ track, handleSelectMusic, index, musicActive }) => {
   return (
     <li
-      className="list-item"
+      className={`list-item ${musicActive == index ? "active" : 0}`}
       onClick={() => {
-        handleSelectMusic(track?.name, track?.album?.images[0]?.url);
+        handleSelectMusic(track?.name, track?.album?.images[0]?.url, index);
       }}
     >
       <img

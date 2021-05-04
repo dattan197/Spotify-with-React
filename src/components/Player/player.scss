@@ -1,43 +1,127 @@
 @import "../../sass/variables";
 @import "../../sass/mixin";
 
-#audio-player {
+#player {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  //padding: 15px 0;
+  height: 70px;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  &:hover {
+    .bar {
+      height: 6px;
+    }
+  }
+  .bar {
+    position: absolute;
+    top: 0;
     width: 100%;
-    position: fixed;
-    bottom: 0;
-    //padding: 15px 0;
-    height: 70px;
-    background: rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(20px);
-    .player__wrapper {
+    height: 2px;
+    //background-image: linear-gradient(-225deg, #69EACB 0%, #EACCF8 48%, #6654F1 100%);
+    background: linear-gradient(to right, #82cfd0 0%, #eaccf8 0%, transparent 0%);
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    -webkit-appearance: none;
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  .player__wrapper {
+    height: 100%;
+    display: flex;
+    //justify-content: space-between;
+    //align-items: center;
+    //position: relative;
+    .player__info {
       height: 100%;
+      display: flex;
+      align-items: center;
+      flex: 1;
+      .player__img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        animation: rotation 7s infinite linear;
+      }
+      .stop-rotaion {
+        animation-play-state: paused;
+      }
+      .player__title {
+        margin-left: 20px;
+        p {
+          margin-bottom: 5px;
+          color: $primary-color;
+          font-size: $font-small;
+        }
+        span {
+          color: $secondary-color;
+          font-size: $font-small;
+        }
+        span + span {
+          margin-left: 10px;
+        }
+      }
+    }
+    .player__btn {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      button {
+    }
+    .player__sound {
+      //height: 100%;
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      i {
         color: $primary-color;
-        background: transparent;
-        border: none;
-        outline: none;
         font-size: $font-medium;
-        &:hover {
-          cursor: pointer;
-          opacity: 0.7;
-        }
-      }
-      button + button {
-        margin-left: 25px;
-      }
-      .btn-play,
-      .btn-pause {
-        font-size: 3.5rem;
+        margin-right: 20px;
       }
     }
-    @include breakpoint(tablet) {
-      .player__wrapper {
-        button + button {
-          margin-left: 40px;
-        }
+    button {
+      color: $primary-color;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: $font-medium;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.7;
+      }
+    }
+    button + button {
+      margin-left: 25px;
+    }
+    .btn-play,
+    .btn-pause {
+      font-size: 3.5rem;
+    }
+  }
+  @include breakpoint(tablet) {
+    .player__wrapper {
+      button + button {
+        margin-left: 40px;
       }
     }
   }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
