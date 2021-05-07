@@ -1,16 +1,13 @@
-const Music = ({ track, handleSelectMusic, index, musicActive }) => {
+const Music = ({ track, handleSelectMusic, index, musicActive, setCurrentPlaying }) => {
   return (
     <li
-      className={`list-item ${musicActive == index ? "active" : 0}`}
+      className={`list-item ${musicActive === index ? "active" : 0}`}
       onClick={() => {
-        handleSelectMusic(track?.name, track?.album?.images[0]?.url, index);
+        setCurrentPlaying(index);
+        handleSelectMusic(track?.name, track?.album?.images[0]?.url, index, track?.preview_url);
       }}
     >
-      <img
-        className="audio-img"
-        src={track?.album?.images[2]?.url}
-        alt="song-img"
-      />
+      <img className="audio-img" src={track?.album?.images[2]?.url} alt="song-img" />
       <p>{track?.name}</p>
     </li>
   );

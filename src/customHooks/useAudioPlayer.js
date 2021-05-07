@@ -1,22 +1,40 @@
 import { useEffect, useState } from 'react'
 
-const useAudioPlayer = () => {
+const useAudioPlayer = (trackUrl, volumeValue) => {
+
+    //========= TIME CONTROL STATE
     const [duration, setDuration] = useState(null);
     const [curTime, setCurTime] = useState(null);
     const [playing, setPlaying] = useState(false);
-    const [clickedTime, setClickedTime] = useState(null);
-    const [percent, setPercent] = useState(0);
+    const [clickedTime, setClickedTime] = useState(0);
+    const [percent, setPercent] = useState(null);
 
+    //========= VOLUME CONTROL STATE
+    const [mute, setMute] = useState(false);
+    const [clickedVolume, setClickedVolume] = useState(null);
+
+    //======== HANDLE WHEN AUDIO SOURCE CHANGED 
     useEffect(() => {
         const audio = document.querySelector('#audio');
-        console.log(audio);
+        if (!trackUrl) return;
+        setClickedTime(0);
+        setPercent(0);
+        audio.load(); // reload audio when src change
+        setPlaying(true);
+    }, [trackUrl])
+
+    //======== HANDLE CONTROL AUDIO
+    useEffect(() => {
+        const audio = document.querySelector('#audio');
+
         function setAudioData() {
+            console.log('loaded')
             setDuration(audio.duration);
             setCurTime(audio.currentTime);
         }
 
         function setAudioTime() {
-            console.log(audio.currentTime / audio.duration * 100);
+            console.log('updating')
             setCurTime(audio.currentTime);
             setPercent(audio.currentTime / audio.duration * 100);
         }
@@ -25,7 +43,6 @@ const useAudioPlayer = () => {
         audio.addEventListener('timeupdate', setAudioTime);
 
         playing ? audio.play() : audio.pause();
-
 
         if (clickedTime && clickedTime !== curTime) {
             audio.currentTime = clickedTime;
@@ -36,10 +53,28 @@ const useAudioPlayer = () => {
             audio.removeEventListener('loadeddata', setAudioData);
             audio.removeEventListener('timeupdate', setAudioTime);
         }
+    });
 
-    })
+    //========== HANDLE AUDIO VOLUME
+    useEffect(() => {
+        if (volumeValue == null) return;
+        const audio = document.querySelector('#audio');
+        
+        function handleMute() {
+            audio.volume = 0;
+            setMute(true)
+        }
+        
+        function handleUnMute() {
+            audio.volume = clickedVolume / 100;
+            setMute(false);
+        }
+        
+        volumeValue == 0 ? handleMute() : handleUnMute();
 
-    return { curTime, setCurTime, duration, playing, setPlaying, clickedTime, setClickedTime, percent };
+    }, [volumeValue]);
+
+    return { time: { curTime, duration, playing, setPlaying, setClickedTime, percent, setPercent }, volume: { mute, setMute, clickedVolume, setClickedVolume } };
 }
 
 export default useAudioPlayer
