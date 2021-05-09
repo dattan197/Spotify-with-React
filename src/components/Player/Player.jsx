@@ -9,7 +9,7 @@ import PlayerInfo from "./PlayerInfo";
 import PlayerButtons from "./PlayerButtons";
 import PlayerVolume from "./PlayerVolume";
 
-const Player = ({ image, title, trackUrl, setCurrentPlaying }) => {
+const Player = ({ image, title, disable, trackUrl, setCurrentPlaying }) => {
   const [volumeValue, setVolumeValue] = useState(null);
 
   const { time, volume } = useAudioPlayer(trackUrl, volumeValue);
@@ -41,9 +41,27 @@ const Player = ({ image, title, trackUrl, setCurrentPlaying }) => {
       <ProgressBar percent={time.percent} handleDragBar={handleDragBar} />
 
       <div className="player__wrapper container">
-        <PlayerInfo title={title} image={image} playing={time.playing} curTime={time.curTime} duration={time.duration} formatTime={formatTime} />
-        <PlayerButtons playing={time.playing} setPlaying={time.setPlaying} setCurrentPlaying={setCurrentPlaying} />
-        <PlayerVolume mute={volume.mute} volumeValue={volumeValue} setVolumeValue={setVolumeValue} clickedVolume={volume.clickedVolume} handleChangeVolume={handleChangeVolume} />
+        <PlayerInfo
+          title={title}
+          image={image}
+          playing={time.playing}
+          curTime={time.curTime}
+          duration={time.duration}
+          formatTime={formatTime}
+        />
+        <PlayerButtons
+          playing={time.playing}
+          setPlaying={time.setPlaying}
+          disable={disable}
+          setCurrentPlaying={setCurrentPlaying}
+        />
+        <PlayerVolume
+          mute={volume.mute}
+          volumeValue={volumeValue}
+          setVolumeValue={setVolumeValue}
+          clickedVolume={volume.clickedVolume}
+          handleChangeVolume={handleChangeVolume}
+        />
       </div>
     </section>
   );

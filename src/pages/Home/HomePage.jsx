@@ -25,6 +25,7 @@ const HomePage = ({ token }) => {
   const [trackUrl, setTrackUrl] = useState("");
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [musicActive, setMusicActive] = useState(null);
+  const [disable, setDisable] = useState(false);
 
   const user = useSelector((state) => state.UserReducer.user);
   const tracks = useSelector((state) => state.PlayListsReducer.tracks);
@@ -36,13 +37,17 @@ const HomePage = ({ token }) => {
   function handleSelectMusic(title, image, index, url) {
     setTitle((_title) => (_title = title));
     setImage((_image) => (_image = image));
-    setMusicActive(index);
     setTrackUrl(url);
+    if (index == null) {
+      setDisable(true);
+      return;
+    }
+    setDisable(false);
+    setMusicActive(index);
   }
 
   useEffect(() => {
     spotifyApi.setAccessToken(token);
-
     // GET USER INFO
     spotifyApi
       .getMe()
@@ -64,27 +69,40 @@ const HomePage = ({ token }) => {
         dispatch({
           type: "GET_PLAYLISTS",
           playlists: res?.items,
-        }),
+        })
       )
       .catch((err) => console.error(err));
   }, [user]);
 
   // HANDLE CLICK PREV & NEXT ON PLAYER
   useEffect(() => {
-    //console.log(tracks[currentPlaying]?.track?.name);
     if (currentPlaying == null) return;
     if (currentPlaying >= tracks.length) {
       setCurrentPlaying(0);
-      handleSelectMusic(tracks[0]?.track?.name, tracks[0]?.track?.album?.images[0]?.url, currentPlaying, tracks[0]?.track?.preview_url);
+      handleSelectMusic(
+        tracks[0]?.track?.name,
+        tracks[0]?.track?.album?.images[0]?.url,
+        currentPlaying,
+        tracks[0]?.track?.preview_url
+      );
       return;
     }
     if (currentPlaying < 0) {
       setCurrentPlaying(tracks.length - 1);
-      handleSelectMusic(tracks[tracks.length - 1]?.track?.name, tracks[tracks.length - 1]?.track?.album?.images[0]?.url, currentPlaying, tracks[tracks.length - 1]?.track?.preview_url);
+      handleSelectMusic(
+        tracks[tracks.length - 1]?.track?.name,
+        tracks[tracks.length - 1]?.track?.album?.images[0]?.url,
+        currentPlaying,
+        tracks[tracks.length - 1]?.track?.preview_url
+      );
       return;
     }
-    //console.log(currentPlaying);
-    handleSelectMusic(tracks[currentPlaying]?.track?.name, tracks[currentPlaying]?.track?.album?.images[0]?.url, currentPlaying, tracks[currentPlaying]?.track?.preview_url);
+    handleSelectMusic(
+      tracks[currentPlaying]?.track?.name,
+      tracks[currentPlaying]?.track?.album?.images[0]?.url,
+      currentPlaying,
+      tracks[currentPlaying]?.track?.preview_url
+    );
   }, [currentPlaying]);
 
   return (
@@ -92,7 +110,12 @@ const HomePage = ({ token }) => {
       <img className="background" src={image} alt="background-img" />
       <div className="filter" />
       <main id="main">
-        <Header toggleSidebar={toggleSidebar} open={open} spotifyApi={spotifyApi} />
+        <Header
+          toggleSidebar={toggleSidebar}
+          open={open}
+          spotifyApi={spotifyApi}
+          handleSelectMusic={handleSelectMusic}
+        />
         <AudioInfo title={title} image={image} />
         <MyPlayList
           tracks={tracks}
@@ -103,7 +126,17 @@ const HomePage = ({ token }) => {
           setMusicActive={setMusicActive}
           setCurrentPlaying={setCurrentPlaying}
         />
-        {trackUrl ? <Player image={image} title={title} trackUrl={trackUrl} setCurrentPlaying={setCurrentPlaying} /> : ""}
+        {trackUrl ? (
+          <Player
+            image={image}
+            title={title}
+            trackUrl={trackUrl}
+            disable={disable}
+            setCurrentPlaying={setCurrentPlaying}
+          />
+        ) : (
+          ""
+        )}
       </main>
       <Sidebar open={open} />
     </>
