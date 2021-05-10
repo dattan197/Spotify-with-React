@@ -1,8 +1,17 @@
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import Playlist from "./Playlist";
 
-const PlayLists = ({ handleSelectPlaylist, playlistActive }) => {
-
+const PlayLists = ({
+  handleSelectPlaylist,
+  playlistActive,
+  handleAddPlaylistRequest,
+  showInput,
+  handlePlaylistInput,
+  setShowInput,
+  playlistName,
+  error,
+}) => {
   const playlists = useSelector((state) => state.PlayListsReducer.playlists);
 
   function renderPlaylists(_playlists) {
@@ -20,12 +29,50 @@ const PlayLists = ({ handleSelectPlaylist, playlistActive }) => {
 
   return (
     <div className="playlist container">
-      <div>
+      <div className="playlist__add">
         <h3>Playlists</h3>
+        <button
+          className="btn"
+          onClick={(e) => {
+            console.log("add");
+            e.stopPropagation();
+            setShowInput(true);
+          }}
+        >
+          <i className="fa fa-plus"></i>Add
+        </button>
       </div>
       <hr />
       <div className="playlist__wrapper">
-        <ul className="list">{renderPlaylists(playlists)}</ul>
+        <ul className="list">
+          {showInput ? (
+            <>
+              <li className="playlist__input">
+                <input
+                  type="text"
+                  value={playlistName}
+                  onChange={(e) => {
+                    handlePlaylistInput(e);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+
+                <div className="btn-add">
+                  <i
+                    className="fa fa-check"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddPlaylistRequest();
+                    }}
+                  ></i>
+                  <i class="fa fa-times close"></i>
+                </div>
+              </li>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+            </>
+          ) : null}
+          {renderPlaylists(playlists)}
+        </ul>
       </div>
     </div>
   );

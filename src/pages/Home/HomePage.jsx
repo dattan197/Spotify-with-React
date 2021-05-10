@@ -26,6 +26,7 @@ const HomePage = ({ token }) => {
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [musicActive, setMusicActive] = useState(null);
   const [disable, setDisable] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
   const user = useSelector((state) => state.UserReducer.user);
   const tracks = useSelector((state) => state.PlayListsReducer.tracks);
@@ -59,20 +60,6 @@ const HomePage = ({ token }) => {
       })
       .catch((err) => console.error(err));
   }, []);
-
-  // GET PLAYLISTS
-  useEffect(() => {
-    if (user == null) return;
-    spotifyApi
-      .getUserPlaylists(user.id)
-      .then((res) =>
-        dispatch({
-          type: "GET_PLAYLISTS",
-          playlists: res?.items,
-        })
-      )
-      .catch((err) => console.error(err));
-  }, [user]);
 
   // HANDLE CLICK PREV & NEXT ON PLAYER
   useEffect(() => {
@@ -109,7 +96,12 @@ const HomePage = ({ token }) => {
     <>
       <img className="background" src={image} alt="background-img" />
       <div className="filter" />
-      <main id="main">
+      <main
+        id="main"
+        onClick={() => {
+          setShowInput(false);
+        }}
+      >
         <Header
           toggleSidebar={toggleSidebar}
           open={open}
@@ -118,6 +110,7 @@ const HomePage = ({ token }) => {
         />
         <AudioInfo title={title} image={image} />
         <MyPlayList
+          user={user}
           tracks={tracks}
           spotifyApi={spotifyApi}
           handleSelectMusic={handleSelectMusic}
@@ -125,6 +118,8 @@ const HomePage = ({ token }) => {
           musicActive={musicActive}
           setMusicActive={setMusicActive}
           setCurrentPlaying={setCurrentPlaying}
+          showInput={showInput}
+          setShowInput={setShowInput}
         />
         {trackUrl ? (
           <Player
