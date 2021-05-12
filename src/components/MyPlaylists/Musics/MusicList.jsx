@@ -1,12 +1,17 @@
 import Music from "./Music";
 
-const MusicList = ({ tracks, handleSelectMusic, musicActive, setCurrentPlaying }) => {
+const MusicList = ({
+  tracks,
+  handleSelectMusic,
+  musicActive,
+  setCurrentPlaying,
+}) => {
   function renderMusicList(_tracks) {
-    if (_tracks.length < 1) return "No music to show!";
-    return _tracks.map((item, index) => (
+    if (!_tracks || _tracks.length < 1) return "No music to show!";
+    return _tracks.map((track, index) => (
       <Music
-        key={item?.track?.id}
-        track={item?.track}
+        key={track?.id}
+        track={track}
         handleSelectMusic={handleSelectMusic}
         index={index}
         musicActive={musicActive}

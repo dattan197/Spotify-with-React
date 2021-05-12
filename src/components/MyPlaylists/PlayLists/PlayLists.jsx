@@ -1,28 +1,34 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
 import Playlist from "./Playlist";
 
 const PlayLists = ({
+  playlists,
+  playlistError,
+  addPlaylistInput,
+  handleAddPlaylist,
+  setAddPlaylistInput,
+  handleClickDelPlaylist,
   handleSelectPlaylist,
   playlistActive,
-  handleAddPlaylistRequest,
   showInput,
-  handlePlaylistInput,
   setShowInput,
-  playlistName,
-  error,
+  editPlaylist,
+  setEditPlaylist,
+  submitEditPlaylist,
 }) => {
-  const playlists = useSelector((state) => state.PlayListsReducer.playlists);
-
+  
   function renderPlaylists(_playlists) {
     if (_playlists.length < 1) return <h3>No playlists to show</h3>;
     return _playlists.map((playlist, index) => (
       <Playlist
+        handleClickDelPlaylist={handleClickDelPlaylist}
         playlist={playlist}
         key={playlist?.id}
         handleSelectPlaylist={handleSelectPlaylist}
         index={index}
         playlistActive={playlistActive}
+        editPlaylist={editPlaylist}
+        setEditPlaylist={setEditPlaylist}
+        submitEditPlaylist={submitEditPlaylist}
       />
     ));
   }
@@ -34,7 +40,6 @@ const PlayLists = ({
         <button
           className="btn"
           onClick={(e) => {
-            console.log("add");
             e.stopPropagation();
             setShowInput(true);
           }}
@@ -50,27 +55,30 @@ const PlayLists = ({
               <li className="playlist__input">
                 <input
                   type="text"
-                  value={playlistName}
+                  value={addPlaylistInput}
                   onChange={(e) => {
-                    handlePlaylistInput(e);
+                    setAddPlaylistInput(e.target.value);
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
-
                 <div className="btn-add">
                   <i
                     className="fa fa-check"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleAddPlaylistRequest();
+                      handleAddPlaylist(addPlaylistInput);
                     }}
                   ></i>
-                  <i class="fa fa-times close"></i>
+                  <i
+                    className="fa fa-times close"
+                    onClick={() => setAddPlaylistInput("")}
+                  ></i>
                 </div>
               </li>
-              {error && <p style={{ color: "red" }}>{error}</p>}
+              {playlistError && <p style={{ color: "red" }}>{playlistError}</p>}
             </>
           ) : null}
+
           {renderPlaylists(playlists)}
         </ul>
       </div>

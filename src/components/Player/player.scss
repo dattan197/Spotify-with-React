@@ -26,7 +26,7 @@
     transition: all 0.2s ease-in-out;
     cursor: pointer;
     -webkit-appearance: none;
-    box-shadow:0 0 10px #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 10px;
@@ -39,9 +39,6 @@
   .player__wrapper {
     height: 100%;
     display: flex;
-    //justify-content: space-between;
-    //align-items: center;
-    //position: relative;
     .player__info {
       height: 100%;
       display: flex;
@@ -78,7 +75,6 @@
       align-items: center;
     }
     .player__sound {
-      //height: 100%;
       flex: 1;
       display: flex;
       justify-content: flex-end;

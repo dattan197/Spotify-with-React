@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 // Authorize
 import { getAccessTokenFormURL } from "./Authorization/authorizeConfig";
 // Components
@@ -6,14 +7,8 @@ import Login from "./components/Login/Login";
 import HomePage from "./pages/Home/HomePage";
 // Style
 import "./app.scss";
-//import { accessToken } from "./config/config";
-// Spotify API
-import SpotifyWebApi from "spotify-web-api-js";
-import { useDispatch, useSelector } from "react-redux";
-
 
 function App() {
-
   const token = useSelector((state) => state.UserReducer.token);
 
   const dispatch = useDispatch();
@@ -26,9 +21,9 @@ function App() {
       type: "SET_TOKEN",
       _token,
     });
-  }, []);
+  }, [dispatch]);
 
-  return token ? <HomePage token={token} /> : <Login />;
+  return <HomePage token={token} />;
 }
 
 export default App;
