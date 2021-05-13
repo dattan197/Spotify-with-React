@@ -1,10 +1,3 @@
-export const getTracksFromPlaylist = (tracks) => {
-  return {
-    type: "GET_TRACKS",
-    tracks,
-  };
-};
-
 export const addPlaylistAction = (newPlaylist) => {
   return {
     type: "ADD_PLAYLIST",
@@ -24,5 +17,20 @@ export const editPlaylistAction = (playlistId, playlistName) => {
     type: "EDIT_PLAYLIST",
     playlistId,
     playlistName,
+  };
+};
+
+export const getTracksFromPlaylist = (tracks) => {
+  return {
+    type: "GET_TRACKS",
+    tracks,
+  };
+};
+
+export const deleteMusicAction = (playlistId, musicId) => {
+  return {
+    type: "DELETE_MUSIC",
+    playlistId,
+    musicId,
   };
 };

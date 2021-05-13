@@ -6,7 +6,6 @@ const PlayLists = ({
   addPlaylistInput,
   handleAddPlaylist,
   setAddPlaylistInput,
-  handleClickDelPlaylist,
   handleSelectPlaylist,
   playlistActive,
   showInput,
@@ -14,13 +13,12 @@ const PlayLists = ({
   editPlaylist,
   setEditPlaylist,
   submitEditPlaylist,
+  handleClickDelete_button,
 }) => {
-  
   function renderPlaylists(_playlists) {
     if (_playlists.length < 1) return <h3>No playlists to show</h3>;
     return _playlists.map((playlist, index) => (
       <Playlist
-        handleClickDelPlaylist={handleClickDelPlaylist}
         playlist={playlist}
         key={playlist?.id}
         handleSelectPlaylist={handleSelectPlaylist}
@@ -29,13 +27,14 @@ const PlayLists = ({
         editPlaylist={editPlaylist}
         setEditPlaylist={setEditPlaylist}
         submitEditPlaylist={submitEditPlaylist}
+        handleClickDelete_button={handleClickDelete_button}
       />
     ));
   }
 
   return (
     <div className="playlist container">
-      <div className="playlist__add">
+      <div className="add">
         <h3>Playlists</h3>
         <button
           className="btn"

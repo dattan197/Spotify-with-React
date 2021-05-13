@@ -17,7 +17,8 @@
   width: 100%;
   height: 100vh;
   object-fit: cover;
-  background: rgba(0, 0, 0, 0.5);
+  //background: rgba(0, 0, 0, 0.5);
+  background: rgb(60 43 62 / 50%);
   z-index: -1;
   backdrop-filter: blur(20px);
 }
@@ -30,16 +31,22 @@
   width: 50px;
 }
 
-.modal {
+.modal-delete {
+  max-width: 300px;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: #fff;
+  text-align: center;
   z-index: 9;
   &__close {
     padding: 10px 20px;
     text-align: right;
+    i {
+      font-size: $font-medium;
+      cursor: pointer;
+    }
   }
   &__confirm {
     padding: 20px;
@@ -64,10 +71,7 @@
   }
 }
 
-.active-item {
-  background: rgba(0, 0, 0, 0.5);
-}
-
+//================================ dark
 .dark {
   position: fixed;
   top: 0;
@@ -76,4 +80,5 @@
   right: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 8;
+  transition-delay: 1s;
 }

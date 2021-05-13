@@ -1,6 +1,8 @@
 import Music from "./Music";
 
 const MusicList = ({
+  setOpenAddModal,
+  handleClickDelete_button,
   tracks,
   handleSelectMusic,
   musicActive,
@@ -16,13 +18,23 @@ const MusicList = ({
         index={index}
         musicActive={musicActive}
         setCurrentPlaying={setCurrentPlaying}
+        handleClickDelete_button={handleClickDelete_button}
       />
     ));
   }
   return (
     <div className="musics">
-      <div>
-        <h3>Musics</h3>
+      <div className="add">
+        <h3>Music</h3>
+        <button
+          className="btn"
+          onClick={() => {
+            setOpenAddModal(true);
+          }}
+        >
+          <i className="fa fa-plus"></i>
+          Add
+        </button>
       </div>
       <hr />
       <div className="musics__wrapper">

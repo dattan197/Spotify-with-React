@@ -20,21 +20,7 @@
   .playlist {
     flex: 0.7;
     //padding-right: 10px;
-    &__add {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      i {
-        margin-right: 10px;
-      }
-      .btn {
-        margin-bottom: 10px;
-        background: transparent;
-        &:hover {
-          background: $secondary-color;
-        }
-      }
-    }
+
     &__wrapper {
       height: 100%;
       padding: 10px 0;
@@ -71,19 +57,19 @@
       padding: 20px 30px 20px 10px;
       cursor: pointer;
       transition: all 0.2s;
-      i {
-        opacity: 0;
-        font-size: $font-medium;
+      form {
+        width: 80%;
+        .edit-input {
+          font-size: $font-medium;
+          color: $secondary-color;
+          cursor: pointer;
+          background: transparent;
+          border: none;
+          padding: 5px;
+          width: 100%;
+        }
       }
-      .edit-input {
-        font-size: $font-medium;
-        color: $secondary-color;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-        padding: 5px;
-      }
-      .editable{
+      .editable {
         border: unset;
       }
       &:hover {
@@ -92,19 +78,9 @@
           color: $primary-color;
           transform: scale(1, 1.2);
         }
-        i {
-          opacity: 1;
-          &:hover {
-            color: $primary-color;
-          }
-        }
       }
-      .playlist__settings {
-        display: flex;
-        label{
-          margin: 0 15px;
-          cursor: pointer;
-        }
+      .settings {
+        display: none;
       }
     }
     .playlist__item + .playlist__item {
@@ -113,7 +89,7 @@
   }
   .musics {
     flex: 1;
-    
+
     &__wrapper {
       padding: 10px 0;
       max-height: 600px;
@@ -138,13 +114,17 @@
         }
         .list-item {
           padding: 7px 0;
+          padding-right: 30px;
           position: relative;
-
           display: flex;
           align-items: center;
           border-radius: 10px;
           cursor: pointer;
           animation: zoomOut 0.1s ease-in-out forwards;
+          justify-content: space-between;
+          p {
+            flex-grow: 1;
+          }
           &::after {
             content: "";
             background: $secondary-color;
@@ -207,5 +187,43 @@
   }
   100% {
     transform: translate3d(0, 0, 0);
+  }
+}
+
+.active-item {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.active-settings {
+  display: flex !important;
+}
+
+.add {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  i {
+    margin-right: 10px;
+  }
+  .btn {
+    margin-bottom: 10px;
+    background: transparent;
+    &:hover {
+      background: $secondary-color;
+    }
+  }
+}
+
+.settings {
+  display: flex;
+  font-size: $font-medium;
+  label {
+    margin: 0 15px;
+    cursor: pointer;
+  }
+  i {
+    &:hover {
+      color: $primary-color;
+    }
   }
 }

@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 // Packages
 import SpotifyWebApi from "spotify-web-api-js";
 import { v4 as uuidv4 } from "uuid";
-
 // Components
 import Header from "../../components/Header/Header";
-import Sidebar from "../../components/Sidebar/Sidebar";
 import MyPlayList from "../../components/MyPlaylists/MyPlayList";
 import Player from "../../components/Player/Player";
 import AudioInfo from "../../components/AudioInfo/AudioInfo";
+import DeleteModal from "../../components/Modal/DeleteModal/DeleteModal";
+import AddModal from "../../components/Modal/AddModal/AddModal";
 
 // Assets
 import background from "../../assets/background.jpg";
 import {
   addPlaylistAction,
+  deleteMusicAction,
   deletePlaylistAction,
   editPlaylistAction,
 } from "../../redux/actions/playlistActions";
@@ -25,15 +25,19 @@ const spotifyApi = new SpotifyWebApi();
 const HomePage = ({ token }) => {
   const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(false); // state to trigger open sidebar
+  const [openAddModal, setOpenAddModal] = useState(null); // state to trigger open sidebar
   const [image, setImage] = useState(background); // state change image
   const [title, setTitle] = useState("Welcome to my Music Manager"); // state change title
 
-  // TRACKS STATE
+  const [info, setInfo] = useState("");
+  const [type, setType] = useState("");
+
+  // MUSIC STATE
   const [trackUrl, setTrackUrl] = useState("");
   const [currentPlaying, setCurrentPlaying] = useState(null);
   const [musicActive, setMusicActive] = useState(null);
   const [disable, setDisable] = useState(false);
+  const [musicId, setMusicId] = useState(null);
 
   // PLAYLIST STATE
   const [playlistActive, setPlaylistActive] = useState(null);
@@ -47,28 +51,12 @@ const HomePage = ({ token }) => {
   const user = useSelector((state) => state.UserReducer.user);
   const playlists = useSelector((state) => state.PlayListsReducer.playlists);
 
-  //console.log(playlists);
-
-  function toggleSidebar() {
-    setOpen((_open) => !_open);
-  }
-
-  function handleSelectPlaylist(index) {
+  //========================================= PLAYLIST =======================================//
+  function handleSelectPlaylist(id, index) {
+    setPlaylistId(id);
     setPlaylistActive(index);
     if (playlistActive === index) return;
     setMusicActive(null);
-  }
-
-  function handleSelectMusic(title, image, index, url) {
-    setTitle((_title) => (_title = title));
-    setImage((_image) => (_image = image));
-    setTrackUrl(url);
-    if (index == null) {
-      setDisable(true);
-      return;
-    }
-    setDisable(false);
-    setMusicActive(index);
   }
 
   function validateAddPlaylistInput(value) {
@@ -94,20 +82,8 @@ const HomePage = ({ token }) => {
     setPlaylistError("");
   }
 
-  function handleClickDelPlaylist(id) {
-    setShowConfirmModal(true);
-    setPlaylistId(id);
-  }
-
-  function handleDeletePlaylist(id, confirm) {
-    if (confirm) {
-      dispatch(deletePlaylistAction(id));
-      setShowConfirmModal(false);
-      setPlaylistActive((_index) => --_index);
-      return;
-    }
-    setShowConfirmModal(false);
-    return;
+  function onDeletePlaylist(id) {
+    dispatch(deletePlaylistAction(id));
   }
 
   function submitEditPlaylist(e, id, playlistName, callback1, callback2) {
@@ -121,8 +97,56 @@ const HomePage = ({ token }) => {
     callback2("");
   }
 
+  //========================================= MUSIC =======================================//
+  function handleSelectMusic(title, image, index, url) {
+    setTitle((_title) => (_title = title));
+    setImage((_image) => (_image = image));
+    setTrackUrl(url);
+    if (index == null) {
+      setDisable(true);
+      return;
+    }
+    setDisable(false);
+    setMusicActive(index);
+  }
+
+  function onDeleteMusic(_playlistId, _musicId) {
+    dispatch(deleteMusicAction(_playlistId, _musicId));
+  }
+
+  // HANDLE WHEN CLICK DELETE BUTTON
+  function handleClickDelete_button(id, name, type) {
+    setInfo(name);
+    setType(type);
+    setShowConfirmModal(true);
+    if (type === "playlist") {
+      setPlaylistId(id);
+      return;
+    }
+    if (type === "music") {
+      setMusicId(id);
+      return;
+    }
+  }
+
+  function handleDelete(_playlistid, _musicId, confirm, type) {
+    if (confirm === false) {
+      setShowConfirmModal(false);
+      return;
+    }
+    if (type === "playlist") {
+      onDeletePlaylist(_playlistid);
+    }
+    if (type === "music") {
+      onDeleteMusic(_playlistid, _musicId);
+    }
+    setShowConfirmModal(false);
+    return;
+  }
+
   // REMOVE ACTION WHEN CLICK ANYWHERE ON THE PAGE
   function handleClickOnMain() {
+    console.log("on main");
     setShowInput(false);
     setPlaylistError("");
     setEditPlaylist(false);
@@ -180,7 +204,6 @@ const HomePage = ({ token }) => {
     );
   }, [currentPlaying]);
 
-
   // GATHER ALL PLAYLIST PROPS
   const playlistProps = {
     playlists,
@@ -195,8 +218,8 @@ const HomePage = ({ token }) => {
     setEditPlaylist,
     handleSelectPlaylist,
     handleAddPlaylist,
-    handleClickDelPlaylist,
     submitEditPlaylist,
+    handleClickDelete_button,
   };
 
   // GATHER ALL MUSIC PROPS
@@ -204,20 +227,32 @@ const HomePage = ({ token }) => {
     tracks: playlists[playlistActive]?.tracks,
     musicActive,
     setCurrentPlaying,
+    setOpenAddModal,
     handleSelectMusic,
+    handleClickDelete_button,
+  };
+
+  // GATHER ALL DELETE MODAL PROPS
+  const DeleteModalProps = {
+    info,
+    playlistId,
+    musicId,
+    type,
+    showConfirmModal,
+    setShowConfirmModal,
+    handleDelete,
   };
 
   return (
     <>
-      <img className="background" src={image} alt="background-img" />
+      <img
+        className="background"
+        src={localStorage.getItem("file")}
+        alt="background-img"
+      />
       <div className="filter" />
       <main id="main" onClick={() => handleClickOnMain()}>
-        <Header
-          toggleSidebar={toggleSidebar}
-          open={open}
-          spotifyApi={spotifyApi}
-          handleSelectMusic={handleSelectMusic}
-        />
+        <Header spotifyApi={spotifyApi} handleSelectMusic={handleSelectMusic} />
         <AudioInfo title={title} image={image} />
         <MyPlayList playlistProps={playlistProps} musicProps={musicProps} />
         {trackUrl ? (
@@ -233,52 +268,15 @@ const HomePage = ({ token }) => {
         )}
       </main>
 
-      {showConfirmModal ? (
-        <>
-          <div
-            className="dark"
-            onClick={() => {
-              setShowConfirmModal(false);
-            }}
-          ></div>
-
-          <div className="modal">
-            <div className="modal__close">
-              <i className="fa fa-times close"></i>
-            </div>
-            <hr />
-            <div className="modal__confirm">
-              <p>Are you sure want to delete?</p>
-            </div>
-            <hr />
-            <div className="modal__btns">
-              <div
-                className="yes"
-                onClick={() => {
-                  handleDeletePlaylist(playlistId, true);
-                }}
-              >
-                Yes
-              </div>
-              <div
-                className="cancel"
-                onClick={() => {
-                  handleDeletePlaylist(playlistId, false);
-                }}
-              >
-                Cancel
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
+      {showConfirmModal ? <DeleteModal {...DeleteModalProps} /> : ""}
+      {openAddModal === null ? (
         ""
+      ) : (
+        <AddModal
+          openAddModal={openAddModal}
+          setOpenAddModal={setOpenAddModal}
+        />
       )}
-      {/* <Sidebar
-        open={open}
-        playlistProps={playlistProps}
-        musicProps={musicProps}
-      /> */}
     </>
   );
 };

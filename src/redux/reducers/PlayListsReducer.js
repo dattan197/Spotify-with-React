@@ -980,7 +980,6 @@ const PlayListsReducer = (state = initialState, action) => {
       for (let index = 0; index < tempPlaylist.length; index++) {
         if (action.playlistId === tempPlaylist[index].id) {
           tempPlaylist.splice(index, 1);
-          return { ...state, playlists: tempPlaylist };
         }
       }
       return { ...state, playlists: tempPlaylist };
@@ -989,6 +988,21 @@ const PlayListsReducer = (state = initialState, action) => {
       tempPlaylist.forEach((item) => {
         if (item.id === action?.playlistId) {
           item.name = action?.playlistName;
+          console.log(item);
+        }
+      });
+      return { ...state, playlists: tempPlaylist };
+    case "DELETE_MUSIC":
+      console.log(action);
+      let tempTracks = tempPlaylist.filter(
+        (playlist) => playlist.id === action.playlistId
+      )[0].tracks;
+      let filteredTempTracks = tempTracks.filter(
+        (track) => track.id !== action?.musicId
+      );
+      tempPlaylist.forEach((item) => {
+        if (item.id === action?.playlistId) {
+          item.tracks = filteredTempTracks;
           console.log(item);
         }
       });

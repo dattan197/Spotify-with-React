@@ -4,7 +4,7 @@ import LogOut from "../LogOut/LogOut";
 import Search from "../Search/Search";
 import "./header.scss";
 
-const Header = ({ spotifyApi, toggleSidebar, open, handleSelectMusic }) => {
+const Header = ({ spotifyApi, handleSelectMusic }) => {
   const dispatch = useDispatch();
 
   const [searchValue, setSearchValue] = useState("");
@@ -37,12 +37,18 @@ const Header = ({ spotifyApi, toggleSidebar, open, handleSelectMusic }) => {
   return (
     <header id="header" className="container">
       <i className="fab fa-spotify" />
-      <Search handleChangeSearch={handleChangeSearch} show={show} setShow={setShow} searchResult={searchResult} handleSelectMusic={handleSelectMusic} />
-      <div id="nav-icon" onClick={toggleSidebar} className={open ? "open" : ""}>
+      <Search
+        handleChangeSearch={handleChangeSearch}
+        show={show}
+        setShow={setShow}
+        searchResult={searchResult}
+        handleSelectMusic={handleSelectMusic}
+      />
+      {/* <div id="nav-icon" onClick={toggleSidebar} className={open ? "open" : ""}>
         <span />
         <span />
         <span />
-      </div>
+      </div> */}
       <nav id="nav-bar">
         <ul className="nav-list">
           <LogOut />

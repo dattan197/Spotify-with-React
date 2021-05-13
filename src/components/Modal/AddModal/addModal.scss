@@ -1,0 +1,99 @@
+@import "../../../sass/variables";
+@import "../../../sass/mixin";
+
+.dark-add {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 8;
+}
+
+@keyframes darkSlideIn {
+  0% {
+    right: -100%;
+  }
+  100% {
+    right: 39%;
+  }
+}
+
+@keyframes darkSlideOut {
+  0% {
+    right: 39%;
+  }
+  100% {
+    right: -100%;
+  }
+}
+
+.active-dark {
+  animation: darkSlideIn 0.25s ease-in-out forwards;
+}
+
+.default-dark {
+  animation: darkSlideOut 0.25s ease-in-out forwards;
+}
+
+.modal-add {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 30px;
+  @include breakpoint(phablet) {
+    width: 39%;
+  }
+  &__form {
+    width: 100%;
+    padding: 20px;
+    color: $secondary-color;
+    font-size: $font-medium;
+    input {
+      margin-top: 5px;
+      padding: 10px;
+      width: 100%;
+      font-size: $font-small;
+      color: $primary-color;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .form-group + .form-group {
+      margin-top: 20px;
+    }
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    right: -100%;
+  }
+  100% {
+    right: 0;
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    right: 0;
+  }
+  100% {
+    right: -100%;
+  }
+}
+
+.active-modal {
+  animation: slideIn 0.25s ease-in-out forwards;
+}
+
+.default {
+  animation: slideOut 0.25s ease-in-out forwards;
+}

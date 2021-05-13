@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 const Playlist = ({
+  handleClickDelete_button,
   playlist,
   handleSelectPlaylist,
   playlistActive,
   index,
-  handleClickDelPlaylist,
   editPlaylist,
   setEditPlaylist,
   submitEditPlaylist,
@@ -22,7 +22,6 @@ const Playlist = ({
     }
   }, [editPlaylist]);
 
-
   return (
     <li
       className={`playlist__item ${
@@ -30,9 +29,8 @@ const Playlist = ({
       }`}
       onClick={(e) => {
         e.stopPropagation();
-        handleSelectPlaylist(index);
+        handleSelectPlaylist(playlist?.id, index);
       }}
-
     >
       {/* <p className="playlist__name">{playlist?.name}</p> */}
       <form
@@ -50,9 +48,13 @@ const Playlist = ({
           disabled={!isEdit}
           style={{ color: `${playlistActive === index ? "#fff" : ""}` }}
         />
-        {error && <p style={{ color: "red", marginTop:'10px' }}>{error}</p>}
+        {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
       </form>
-      <div className="playlist__settings">
+      <div
+        className={`settings ${
+          playlistActive === index ? "active-settings" : ""
+        }`}
+      >
         <label htmlFor={`playlist-name-${index}`}>
           {isEdit ? (
             <i
@@ -77,7 +79,7 @@ const Playlist = ({
           className="fa fa-trash-alt"
           onClick={(e) => {
             e.stopPropagation();
-            handleClickDelPlaylist(playlist?.id);
+            handleClickDelete_button(playlist?.id, playlist?.name, "playlist");
           }}
         ></i>
       </div>
