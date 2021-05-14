@@ -1,5 +1,5 @@
-@import "../../../sass/variables";
-@import "../../../sass/mixin";
+@import "../../sass/variables";
+@import "../../sass/mixin";
 
 .dark-add {
   position: fixed;
@@ -30,11 +30,11 @@
 }
 
 .active-dark {
-  animation: darkSlideIn 0.25s ease-in-out forwards;
+  animation: darkSlideIn 0.3s ease-in-out forwards;
 }
 
 .default-dark {
-  animation: darkSlideOut 0.25s ease-in-out forwards;
+  animation: darkSlideOut 0.3s ease-in-out forwards;
 }
 
 .modal-add {
@@ -43,7 +43,7 @@
   bottom: 0;
   right: -100%;
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   z-index: 9;
   display: flex;
@@ -56,6 +56,7 @@
   &__form {
     width: 100%;
     padding: 20px;
+    max-width: 350px;
     color: $secondary-color;
     font-size: $font-medium;
     input {
@@ -65,9 +66,52 @@
       font-size: $font-small;
       color: $primary-color;
       background: rgba(0, 0, 0, 0.2);
+      border-radius: 7px;
     }
     .form-group + .form-group {
       margin-top: 20px;
+    }
+    .form-select {
+      margin-top: 5px;
+      background: transparent;
+      color: $primary-color;
+      padding: 10px 20px;
+      width: 100%;
+      option {
+        color: #000;
+        padding: 10px 0;
+        list-style: none;
+      }
+    }
+    .form-btns {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-around;
+
+      .btn-add {
+        background: transparent;
+        color: #187ec2;
+        border-color: #187ec2;
+        border-width: 3px;
+        font-weight: 800;
+        cursor: pointer;
+        &:hover {
+          background: #187ec2;
+          color: #fff;
+        }
+      }
+      .btn-cancel {
+        background: transparent;
+        color: #ed5e68;
+        border-color: #ed5e68;
+        border-width: 3px;
+        font-weight: 800;
+        cursor: pointer;
+        &:hover {
+          background: #ed5e68;
+          color: #fff;
+        }
+      }
     }
   }
 }

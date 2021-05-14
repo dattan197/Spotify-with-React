@@ -9,16 +9,13 @@ import MyPlayList from "../../components/MyPlaylists/MyPlayList";
 import Player from "../../components/Player/Player";
 import AudioInfo from "../../components/AudioInfo/AudioInfo";
 import DeleteModal from "../../components/Modal/DeleteModal/DeleteModal";
-import AddModal from "../../components/Modal/AddModal/AddModal";
+import FormModal from "../../components/Modal/FormModal";
+import AddForm from "../../components/Modal/AddModal/AddForm";
 
 // Assets
 import background from "../../assets/background.jpg";
-import {
-  addPlaylistAction,
-  deleteMusicAction,
-  deletePlaylistAction,
-  editPlaylistAction,
-} from "../../redux/actions/playlistActions";
+import { addPlaylistAction, deletePlaylistAction, editPlaylistAction } from "../../redux/actions/playlistActions";
+import { addMusicAction, deleteMusicAction } from "../../redux/actions/musicActions";
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -38,6 +35,8 @@ const HomePage = ({ token }) => {
   const [musicActive, setMusicActive] = useState(null);
   const [disable, setDisable] = useState(false);
   const [musicId, setMusicId] = useState(null);
+  const [addMusicInput, setAddMusicInput] = useState({ musicName: "", mp3Upload: null, imgUpload: null, playlist_id: "" });
+  const [musicErrors, setMusicErrors] = useState(null);
 
   // PLAYLIST STATE
   const [playlistActive, setPlaylistActive] = useState(null);
@@ -144,12 +143,68 @@ const HomePage = ({ token }) => {
     return;
   }
 
+  function handleInputAddMusic(e) {
+    const { value, files, type, name } = e.target;
+    setAddMusicInput({
+      ...addMusicInput,
+      [name]: type === "file" ? files[0] : value,
+    });
+  }
+
+  function validateAddForm(value) {
+    const error = {};
+    if (!value?.musicName.trim()) {
+      error.musicName = "Please input name !";
+    }
+    if (value?.mp3Upload === null) {
+      error.mp3Upload = "Please upload mp3 file !";
+    } else if (value?.mp3Upload?.type !== "audio/mpeg") {
+      error.mp3Upload = "Invalid uploaded file !";
+    }
+    if (value?.imgUpload === null) {
+      error.imgUpload = "Please upload image file !";
+    } else if (value?.imgUpload?.type !== "image/jpeg" && value?.imgUpload.type !== "image/png") {
+      error.imgUpload = "Invalid uploaded file !";
+    }
+    if (!value?.playlist_id.trim()) {
+      error.playlist_id = "Please select playlist !";
+    }
+    return error;
+  }
+
+  function handleSubmitAddMusic(e) {
+    e.preventDefault();
+    const valid = { ...validateAddForm(addMusicInput) };
+    setMusicErrors(valid);
+    // check if there is any errors
+    if (Object.keys(valid).length !== 0) {
+      return;
+    }
+    let newMusic = {
+      id: uuidv4(),
+      name: addMusicInput.musicName,
+      preview_url: window.URL.createObjectURL(addMusicInput.mp3Upload),
+      image: window.URL.createObjectURL(addMusicInput.imgUpload),
+    };
+    dispatch(addMusicAction(addMusicInput.playlist_id, newMusic));
+    setMusicErrors(null);
+    setAddMusicInput({ musicName: "", mp3Upload: null, imgUpload: null, playlist_id: "" });
+    e.target.reset();
+  }
+
+  function onClickEditMusic(id) {
+    setOpenAddModal(true);
+    setMusicId(id);
+    setType("edit_music");
+  }
+
   // REMOVE ACTION WHEN CLICK ANYWHERE ON THE PAGE
   function handleClickOnMain() {
     console.log("on main");
     setShowInput(false);
     setPlaylistError("");
     setEditPlaylist(false);
+    setType("");
   }
 
   useEffect(() => {
@@ -168,41 +223,27 @@ const HomePage = ({ token }) => {
 
   // HANDLE CLICK PREV & NEXT ON PLAYER
   useEffect(() => {
-    if (
-      currentPlaying == null ||
-      playlistActive == null ||
-      playlists[playlistActive]?.tracks.length === 0
-    )
-      return;
+    if (currentPlaying == null || playlistActive == null || playlists[playlistActive]?.tracks.length === 0) return;
     let tracks = [...playlists[playlistActive]?.tracks];
     let length = tracks.length;
     if (currentPlaying >= length) {
       setCurrentPlaying(0);
-      handleSelectMusic(
-        tracks[0]?.name,
-        tracks[0]?.images[0]?.url,
-        currentPlaying,
-        tracks[0]?.preview_url
-      );
+      handleSelectMusic(tracks[0]?.name, tracks[0]?.image, currentPlaying, tracks[0]?.preview_url);
       return;
     }
     if (currentPlaying < 0) {
       setCurrentPlaying(length - 1);
-      handleSelectMusic(
-        tracks[length - 1]?.name,
-        tracks[length - 1]?.images[0]?.url,
-        currentPlaying,
-        tracks[length - 1]?.preview_url
-      );
+      handleSelectMusic(tracks[length - 1]?.name, tracks[length - 1]?.image, currentPlaying, tracks[length - 1]?.preview_url);
       return;
     }
-    handleSelectMusic(
-      tracks[currentPlaying]?.name,
-      tracks[currentPlaying]?.images[0]?.url,
-      currentPlaying,
-      tracks[currentPlaying]?.preview_url
-    );
+    handleSelectMusic(tracks[currentPlaying]?.name, tracks[currentPlaying]?.image, currentPlaying, tracks[currentPlaying]?.preview_url);
   }, [currentPlaying]);
+
+  useEffect(() => {
+    if (openAddModal === false) {
+      setMusicErrors(null);
+    }
+  }, [openAddModal]);
 
   // GATHER ALL PLAYLIST PROPS
   const playlistProps = {
@@ -245,37 +286,29 @@ const HomePage = ({ token }) => {
 
   return (
     <>
-      <img
-        className="background"
-        src={localStorage.getItem("file")}
-        alt="background-img"
-      />
+      <img className="background" src={image} alt="background-img" />
       <div className="filter" />
       <main id="main" onClick={() => handleClickOnMain()}>
         <Header spotifyApi={spotifyApi} handleSelectMusic={handleSelectMusic} />
         <AudioInfo title={title} image={image} />
         <MyPlayList playlistProps={playlistProps} musicProps={musicProps} />
-        {trackUrl ? (
-          <Player
-            image={image}
-            title={title}
-            trackUrl={trackUrl}
-            disable={disable}
-            setCurrentPlaying={setCurrentPlaying}
-          />
-        ) : (
-          ""
-        )}
+        {trackUrl ? <Player image={image} title={title} trackUrl={trackUrl} disable={disable} setCurrentPlaying={setCurrentPlaying} /> : ""}
       </main>
 
       {showConfirmModal ? <DeleteModal {...DeleteModalProps} /> : ""}
       {openAddModal === null ? (
         ""
       ) : (
-        <AddModal
-          openAddModal={openAddModal}
-          setOpenAddModal={setOpenAddModal}
-        />
+        <FormModal openAddModal={openAddModal} setOpenAddModal={setOpenAddModal}>
+          <AddForm
+            setMusicErrors={setMusicErrors}
+            musicErrors={musicErrors}
+            playlists={playlists}
+            setOpenAddModal={setOpenAddModal}
+            handleSubmitAddMusic={handleSubmitAddMusic}
+            handleInputAddMusic={handleInputAddMusic}
+          />
+        </FormModal>
       )}
     </>
   );
