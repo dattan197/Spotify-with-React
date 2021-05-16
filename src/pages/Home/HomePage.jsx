@@ -15,9 +15,15 @@ import AddForm from "../../components/Modal/AddModal/AddForm";
 // Assets
 import background from "../../assets/background.jpg";
 import { addPlaylistAction, deletePlaylistAction, editPlaylistAction } from "../../redux/actions/playlistActions";
-import { addMusicAction, deleteMusicAction } from "../../redux/actions/musicActions";
+import { addMusicAction, deleteMusicAction, editMusicAction } from "../../redux/actions/musicActions";
+import EditForm from "../../components/Modal/EditModal/EditForm";
 
 const spotifyApi = new SpotifyWebApi();
+
+function findIndexById(id, array) {
+  let index = array.map((item) => item.id).indexOf(id);
+  return index;
+}
 
 const HomePage = ({ token }) => {
   const dispatch = useDispatch();
@@ -36,6 +42,7 @@ const HomePage = ({ token }) => {
   const [disable, setDisable] = useState(false);
   const [musicId, setMusicId] = useState(null);
   const [addMusicInput, setAddMusicInput] = useState({ musicName: "", mp3Upload: null, imgUpload: null, playlist_id: "" });
+  const [editMusicInput, setEditMusicInput] = useState({ musicName: "", mp3Upload: null, imgUpload: null });
   const [musicErrors, setMusicErrors] = useState(null);
 
   // PLAYLIST STATE
@@ -102,7 +109,7 @@ const HomePage = ({ token }) => {
     setImage((_image) => (_image = image));
     setTrackUrl(url);
     if (index == null) {
-      setDisable(true);
+      setDisable(true); // disable prev & next button if click on music from search
       return;
     }
     setDisable(false);
@@ -175,8 +182,8 @@ const HomePage = ({ token }) => {
   function handleSubmitAddMusic(e) {
     e.preventDefault();
     const valid = { ...validateAddForm(addMusicInput) };
-    setMusicErrors(valid);
     // check if there is any errors
+    setMusicErrors(valid);
     if (Object.keys(valid).length !== 0) {
       return;
     }
@@ -192,10 +199,57 @@ const HomePage = ({ token }) => {
     e.target.reset();
   }
 
-  function onClickEditMusic(id) {
+  function onClickEditMusic(id, name, mp3, img) {
     setOpenAddModal(true);
     setMusicId(id);
     setType("edit_music");
+    setEditMusicInput({ musicName: name, mp3Upload: mp3, imgUpload: img });
+  }
+
+  function handleEditInput(e) {
+    let { value, files, type, name } = e.target;
+    setEditMusicInput({
+      ...editMusicInput,
+      [name]: type === "file" ? files[0] : value,
+    });
+  }
+
+  function validateEditInput(value, _currentValue) {
+    let error = {};
+    if (!value?.musicName.trim()) {
+      error.blankError = "This field can not be blank!";
+    }
+    // if inputs haven't changed => nothing to update => cancel submitting
+    if (value?.musicName === _currentValue?.musicName && value?.mp3Upload === _currentValue?.mp3Upload && value?.imgUpload === _currentValue?.imgUpload) {
+      error.sameValueError = "Updating values are the same as current values!";
+    }
+    return error;
+  }
+
+  function handleSubmitEditMusic(e) {
+    e.preventDefault();
+    // find current values of chosen track to compare to new value
+    let currentTrack = playlists[findIndexById(playlistId, playlists)]?.tracks[findIndexById(musicId, playlists[findIndexById(playlistId, playlists)]?.tracks)];
+    const currentValue = {
+      musicName: currentTrack?.name,
+      imgUpload: currentTrack?.image,
+      mp3Upload: currentTrack?.preview_url,
+    };
+    let errors = { ...validateEditInput(editMusicInput, currentValue) };
+    setMusicErrors(errors);
+    // check is there any error?
+    if (Object.keys(errors).length !== 0) {
+      return;
+    }
+    // create an update object and transform value of files to blob
+    let musicUpdate = {
+      id: musicId,
+      name: editMusicInput.musicName,
+      preview_url: typeof editMusicInput.mp3Upload === "object" ? window.URL.createObjectURL(editMusicInput.mp3Upload) : editMusicInput.mp3Upload,
+      image: typeof editMusicInput.imgUpload === "object" ? window.URL.createObjectURL(editMusicInput.imgUpload) : editMusicInput.imgUpload,
+    };
+    dispatch(editMusicAction(playlistId, musicUpdate));
+    setOpenAddModal(false);
   }
 
   // REMOVE ACTION WHEN CLICK ANYWHERE ON THE PAGE
@@ -265,8 +319,9 @@ const HomePage = ({ token }) => {
 
   // GATHER ALL MUSIC PROPS
   const musicProps = {
-    tracks: playlists[playlistActive]?.tracks,
+    totalTracks: playlists[playlistActive]?.tracks,
     musicActive,
+    onClickEditMusic,
     setCurrentPlaying,
     setOpenAddModal,
     handleSelectMusic,
@@ -299,15 +354,19 @@ const HomePage = ({ token }) => {
       {openAddModal === null ? (
         ""
       ) : (
-        <FormModal openAddModal={openAddModal} setOpenAddModal={setOpenAddModal}>
-          <AddForm
-            setMusicErrors={setMusicErrors}
-            musicErrors={musicErrors}
-            playlists={playlists}
-            setOpenAddModal={setOpenAddModal}
-            handleSubmitAddMusic={handleSubmitAddMusic}
-            handleInputAddMusic={handleInputAddMusic}
-          />
+        <FormModal openAddModal={openAddModal} setOpenAddModal={setOpenAddModal} setMusicErrors={setMusicErrors}>
+          {type === "edit_music" ? (
+            <EditForm musicErrors={musicErrors} editMusicInput={editMusicInput} setOpenAddModal={setOpenAddModal} handleEditInput={handleEditInput} handleSubmitEditMusic={handleSubmitEditMusic} />
+          ) : (
+            <AddForm
+              setMusicErrors={setMusicErrors}
+              musicErrors={musicErrors}
+              playlists={playlists}
+              setOpenAddModal={setOpenAddModal}
+              handleSubmitAddMusic={handleSubmitAddMusic}
+              handleInputAddMusic={handleInputAddMusic}
+            />
+          )}
         </FormModal>
       )}
     </>

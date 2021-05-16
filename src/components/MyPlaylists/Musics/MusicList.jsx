@@ -1,13 +1,23 @@
+import { useEffect, useState } from "react";
 import Music from "./Music";
 
-const MusicList = ({
-  setOpenAddModal,
-  handleClickDelete_button,
-  tracks,
-  handleSelectMusic,
-  musicActive,
-  setCurrentPlaying,
-}) => {
+const MusicList = ({ currentTracks, totalTracks, musicsPerPage, changePage, musicActive, setOpenAddModal, onClickEditMusic, setCurrentPlaying, handleClickDelete_button, handleSelectMusic }) => {
+  console.log(currentTracks);
+
+  const [totalPages, setTotalPages] = useState(null);
+
+  useEffect(() => {
+    if (totalTracks && currentTracks) {
+      let _totalPages = [];
+      for (let i = 1; i <= Math.ceil(totalTracks?.length / musicsPerPage); i++) {
+        _totalPages.push(i);
+      }
+      setTotalPages(_totalPages);
+      return;
+    }
+    return;
+  }, [currentTracks, totalTracks]);
+
   function renderMusicList(_tracks) {
     if (!_tracks || _tracks.length < 1) return "No music to show!";
     return _tracks.map((track, index) => (
@@ -19,6 +29,7 @@ const MusicList = ({
         musicActive={musicActive}
         setCurrentPlaying={setCurrentPlaying}
         handleClickDelete_button={handleClickDelete_button}
+        onClickEditMusic={onClickEditMusic}
       />
     ));
   }
@@ -38,7 +49,26 @@ const MusicList = ({
       </div>
       <hr />
       <div className="musics__wrapper">
-        <ul className="list">{renderMusicList(tracks)}</ul>
+        <ul className="list">{renderMusicList(currentTracks)}</ul>
+      </div>
+      <div className="pagination">
+        <ul className="pagination-pages">
+          {totalPages &&
+            totalPages.map((pageNumber) => (
+              <li className="page-wrapper" key={pageNumber}>
+                <a
+                  className="page"
+                  href="#"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    changePage(pageNumber);
+                  }}
+                >
+                  {pageNumber}
+                </a>
+              </li>
+            ))}
+        </ul>
       </div>
     </div>
   );

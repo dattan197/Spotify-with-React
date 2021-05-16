@@ -112,6 +112,18 @@
           color: #fff;
         }
       }
+      .btn-update {
+        background: transparent;
+        color: #22d81b;
+        border-color: #22d81b;
+        border-width: 3px;
+        font-weight: 800;
+        cursor: pointer;
+        &:hover {
+          background: #22d81b;
+          color: #fff;
+        }
+      }
     }
   }
 }

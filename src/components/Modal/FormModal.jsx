@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import "./formModal.scss";
 
 const FormModal = (props) => {
-  console.log(props);
   return (
     <>
       <div
