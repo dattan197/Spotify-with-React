@@ -4,6 +4,7 @@
 #audio-list {
   display: flex;
   padding: 40px 0 20px 0;
+  min-height: 500px;
   color: $secondary-color;
   h3 {
     font-size: $font-medium;
@@ -89,6 +90,7 @@
   }
   .musics {
     flex: 1;
+    position: relative;
     &__wrapper {
       padding: 10px 0;
       .list {
@@ -128,19 +130,23 @@
     }
     .pagination {
       font-size: $font-medium;
-
+      position: absolute;
+      bottom: 0px;
+      left: 50%;
+      transform: translateX(-50%);
       &-pages {
         display: flex;
         .page-wrapper {
+          cursor: pointer;
           .page {
             color: $primary-color;
           }
         }
+        .page-wrapper + .page-wrapper {
+          margin-left: 15px;
+        }
       }
     }
-  }
-  .lyrics {
-    flex: 1;
   }
   .audio-img {
     width: 40px;
@@ -191,6 +197,11 @@
 
 .active-settings {
   display: flex !important;
+  align-items: center;
+}
+
+.page-active {
+  color: hotpink !important;
 }
 
 .add {

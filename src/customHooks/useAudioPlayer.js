@@ -28,13 +28,11 @@ const useAudioPlayer = (trackUrl, volumeValue) => {
         const audio = document.querySelector('#audio');
 
         function setAudioData() {
-            console.log('loaded')
             setDuration(audio.duration);
             setCurTime(audio.currentTime);
         }
 
         function setAudioTime() {
-            console.log('updating')
             setCurTime(audio.currentTime);
             setPercent(audio.currentTime / audio.duration * 100);
         }

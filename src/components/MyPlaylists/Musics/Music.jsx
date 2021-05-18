@@ -4,8 +4,7 @@ const Music = ({ onClickEditMusic, handleClickDelete_button, track, handleSelect
       className={`list-item ${musicActive === index ? "active-item" : 0}`}
       onClick={() => {
         setCurrentPlaying(index);
-        console.log(track?.id);
-        handleSelectMusic(track?.name, track?.image, index, track?.preview_url);
+        handleSelectMusic(track?.id, track?.name, track?.image, index, track?.preview_url);
       }}
     >
       <img className="audio-img" src={track?.image} alt="song-img" />

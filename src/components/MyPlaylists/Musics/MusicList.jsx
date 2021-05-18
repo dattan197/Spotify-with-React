@@ -1,7 +1,19 @@
-import { useEffect, useState } from "react";
 import Music from "./Music";
 
-const MusicList = ({ currentTracks, totalPages, handleChangePage, musicActive, setOpenAddModal, onClickEditMusic, setCurrentPlaying, handleClickDelete_button, handleSelectMusic }) => {
+const MusicList = ({
+  handleOnChangeSearch,
+  search,
+  currentPage,
+  currentTracks,
+  totalPages,
+  handleChangePage,
+  musicActive,
+  setOpenAddModal,
+  onClickEditMusic,
+  setCurrentPlaying,
+  handleClickDelete_button,
+  handleSelectMusic,
+}) => {
   function renderMusicList(_tracks) {
     if (!_tracks || _tracks.length < 1) return "No music to show!";
     return _tracks.map((track, index) => (
@@ -18,9 +30,10 @@ const MusicList = ({ currentTracks, totalPages, handleChangePage, musicActive, s
     ));
   }
   return (
-    <div className="musics">
+    <div className="musics container">
       <div className="add">
         <h3>Music</h3>
+        <input type="text" placeholder="search" value={search} onChange={handleOnChangeSearch} />
         <button
           className="btn"
           onClick={() => {
@@ -38,20 +51,23 @@ const MusicList = ({ currentTracks, totalPages, handleChangePage, musicActive, s
       <div className="pagination">
         <ul className="pagination-pages">
           {totalPages &&
-            totalPages.map((pageNumber, index) => (
-              <li className="page-wrapper" key={pageNumber}>
-                <a
-                  className="page"
-                  href="#"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleChangePage(pageNumber);
-                  }}
-                >
-                  {pageNumber}
-                </a>
-              </li>
-            ))}
+            totalPages.map((pageNumber, index) => {
+              const pageClasses = ["page"];
+              if (pageNumber === currentPage) pageClasses.push("page-active");
+              return (
+                <li className="page-wrapper" key={pageNumber}>
+                  <span
+                    className={pageClasses.join(" ")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChangePage(pageNumber);
+                    }}
+                  >
+                    {pageNumber}
+                  </span>
+                </li>
+              );
+            })}
         </ul>
       </div>
     </div>

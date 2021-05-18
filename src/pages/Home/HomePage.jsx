@@ -14,7 +14,7 @@ import AddForm from "../../components/Modal/AddModal/AddForm";
 
 // Assets
 import background from "../../assets/background.jpg";
-import { addPlaylistAction, deletePlaylistAction, editPlaylistAction } from "../../redux/actions/playlistActions";
+import { addPlaylistAction, deletePlaylistAction, editPlaylistAction, getTracksFromPlaylist } from "../../redux/actions/playlistActions";
 import { addMusicAction, deleteMusicAction, editMusicAction } from "../../redux/actions/musicActions";
 import EditForm from "../../components/Modal/EditModal/EditForm";
 
@@ -63,23 +63,24 @@ const HomePage = ({ token }) => {
 
   const user = useSelector((state) => state.UserReducer.user);
   const playlists = useSelector((state) => state.PlayListsReducer.playlists);
+  const tracks = useSelector((state) => state.PlayListsReducer.tracks);
 
   //================ calculate pagination
   useEffect(() => {
     console.log("total tracks ", totalTracks.length);
-    if (totalTracks.length < 1) {
+    if (tracks.length < 1) {
       setCurrentTracks(null);
       return;
     }
     const indexOfLastTrack = currentPage * tracksPerPage;
     const indexOfFirstTrack = indexOfLastTrack - tracksPerPage;
-    const _currentTracks = totalTracks.slice(indexOfFirstTrack, indexOfLastTrack);
+    const _currentTracks = tracks.slice(indexOfFirstTrack, indexOfLastTrack);
     setCurrentTracks(_currentTracks);
-  }, [totalTracks, currentPage, playlists]);
+  }, [tracks, currentPage, playlists]);
 
   useEffect(() => {
     let _totalPages = [];
-    for (let i = 1; i <= Math.ceil(totalTracks.length / tracksPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(tracks.length / tracksPerPage); i++) {
       _totalPages.push(i);
     }
     setTotalPages(_totalPages);
@@ -114,14 +115,11 @@ const HomePage = ({ token }) => {
     setPlaylistActive(index);
     setTotalTracks(playlists[index]?.tracks);
     if (playlistActive === index) return;
+    dispatch(getTracksFromPlaylist(playlists[index]?.tracks));
     setCurrentPage(1);
     setCurrentPlaying(null);
     setMusicActive(null);
   }
-
-  useEffect(() => {
-    console.log("total tracks ", totalTracks);
-  }, [totalTracks]);
 
   function validateAddPlaylistInput(value) {
     if (value) return true;
@@ -165,7 +163,6 @@ const HomePage = ({ token }) => {
 
   //========================================= MUSIC =======================================//
   function handleSelectMusic(id, title, image, index, url) {
-    console.log("id", id);
     setMusicId(id);
     setTitle((_title) => (_title = title));
     setImage((_image) => (_image = image));
@@ -186,6 +183,7 @@ const HomePage = ({ token }) => {
   useEffect(() => {
     if (playlistId === null || currentTracks === null) return;
     let indexPlaylist = findIndexById(playlistId, playlists);
+    if (indexPlaylist === -1) return;
     setTotalTracks(playlists[indexPlaylist]?.tracks);
     if (musicActive === null) return;
     let indexTrack = findIndexById(musicId, currentTracks);
@@ -196,7 +194,8 @@ const HomePage = ({ token }) => {
       setMusicActive(null);
       return;
     }
-    if (indexTrack > musicActive) {
+    if (indexTrack < musicActive) {
+      setCurrentPlaying(musicActive - 1);
       return;
     }
   }, [playlists]);
@@ -357,22 +356,20 @@ const HomePage = ({ token }) => {
 
   // HANDLE CLICK PREV & NEXT ON PLAYER
   useEffect(() => {
-    console.log(currentPlaying);
-    console.log(currentTracks);
     if (currentPlaying == null || playlistActive == null || currentTracks.length === 0) return;
-    let tracks = [...currentTracks];
-    let length = tracks.length;
+    let tempTracks = [...currentTracks];
+    let length = tempTracks.length;
     if (currentPlaying >= length) {
       setCurrentPlaying(0);
-      handleSelectMusic(tracks[0]?.id, tracks[0]?.name, tracks[0]?.image, currentPlaying, tracks[0]?.preview_url);
+      handleSelectMusic(tempTracks[0]?.id, tempTracks[0]?.name, tempTracks[0]?.image, currentPlaying, tempTracks[0]?.preview_url);
       return;
     }
     if (currentPlaying < 0) {
       setCurrentPlaying(length - 1);
-      handleSelectMusic(tracks[length - 1]?.id, tracks[length - 1]?.name, tracks[length - 1]?.image, currentPlaying, tracks[length - 1]?.preview_url);
+      handleSelectMusic(tempTracks[length - 1]?.id, tempTracks[length - 1]?.name, tempTracks[length - 1]?.image, currentPlaying, tempTracks[length - 1]?.preview_url);
       return;
     }
-    handleSelectMusic(tracks[currentPlaying]?.id, tracks[currentPlaying]?.name, tracks[currentPlaying]?.image, currentPlaying, tracks[currentPlaying]?.preview_url);
+    handleSelectMusic(tempTracks[currentPlaying]?.id, tempTracks[currentPlaying]?.name, tempTracks[currentPlaying]?.image, currentPlaying, tempTracks[currentPlaying]?.preview_url);
   }, [currentPlaying, currentTracks]);
 
   useEffect(() => {
@@ -402,8 +399,9 @@ const HomePage = ({ token }) => {
   // GATHER ALL MUSIC PROPS
   const musicProps = {
     totalTracks,
-    totalPages,
     currentTracks,
+    totalPages,
+    currentPage,
     musicActive,
     onClickEditMusic,
     setCurrentPlaying,

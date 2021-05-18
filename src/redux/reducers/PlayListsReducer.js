@@ -271,16 +271,17 @@ const initialState = {
       ],
     },
   ],
-  tracks: {},
+  tracks: [],
 };
 
 const PlayListsReducer = (state = initialState, action) => {
   //console.log(action);
   let tempPlaylist = [...state.playlists];
+  let tempTracks = [...state.tracks];
   switch (action.type) {
-    case "GET_PLAYLISTS":
-      /* console.log(action.playlists); */
-      return { ...state, playlists: action.playlists };
+    case "GET_TRACKS":
+      console.log(action.tracks);
+      return { ...state, tracks: action.tracks };
     case "GET_SONGS":
       console.log(action.tracks);
       for (let index = 0; index < tempPlaylist.length; index++) {
@@ -316,8 +317,8 @@ const PlayListsReducer = (state = initialState, action) => {
       return { ...state, playlists: tempPlaylist };
     case "DELETE_MUSIC":
       console.log(action);
-      let tempTracks = tempPlaylist.filter((playlist) => playlist.id === action.playlistId)[0].tracks;
-      let filteredTempTracks = tempTracks.filter((track) => track.id !== action?.musicId);
+      let newTempTracks = tempPlaylist.filter((playlist) => playlist.id === action.playlistId)[0].tracks;
+      let filteredTempTracks = newTempTracks.filter((track) => track.id !== action?.musicId);
       tempPlaylist.forEach((item) => {
         if (item.id === action?.playlistId) {
           item.tracks = filteredTempTracks;
@@ -325,7 +326,10 @@ const PlayListsReducer = (state = initialState, action) => {
           return;
         }
       });
-      return { ...state, playlists: tempPlaylist };
+      console.log(tempTracks);
+      let filterSearch = tempTracks.filter((track) => track.id !== action?.musicId);
+      console.log(filterSearch);
+      return { ...state, playlists: tempPlaylist, tracks: filterSearch };
     case "ADD_MUSIC":
       console.log(action);
       tempPlaylist.forEach((item) => {
@@ -358,6 +362,12 @@ const PlayListsReducer = (state = initialState, action) => {
         }
       });
       return { ...state, playlists: tempPlaylist };
+    case "SEARCH_TRACKS":
+      console.log(action.searchResult);
+      return { ...state, tracks: action.searchResult };
+    case "RESET_SEARCH":
+      console.log("reset");
+      return { ...state, tracks: tempPlaylist[action.playlistIndex].tracks };
     default:
       return state;
   }
