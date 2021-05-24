@@ -32,10 +32,6 @@ const MyPlayList = ({ playlistProps, musicProps }) => {
     musicProps.setCurrentPage(1);
   }
 
-  useEffect(() => {
-    console.log(search);
-  }, [search]);
-
   return (
     <section id="audio-list">
       <PlayLists {...playlistProps} />
