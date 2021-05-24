@@ -31,9 +31,9 @@ const MyPlayList = ({ playlistProps, musicProps }) => {
     dispatch(getTracksFormSearch(searchResult));
   }
 
-  /* useEffect(() => {
+  useEffect(() => {
     console.log(search);
-  }, [search]); */
+  }, [search]);
 
   return (
     <section id="audio-list">
