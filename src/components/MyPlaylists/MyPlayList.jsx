@@ -29,6 +29,7 @@ const MyPlayList = ({ playlistProps, musicProps }) => {
       return;
     }
     dispatch(getTracksFormSearch(searchResult));
+    musicProps.setCurrentPage(1);
   }
 
   /* useEffect(() => {
