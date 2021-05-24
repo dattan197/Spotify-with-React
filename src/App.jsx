@@ -23,7 +23,7 @@ function App() {
     });
   }, [dispatch]);
 
-  return <HomePage token={token} />;
+  return token ? <HomePage token={token} /> : <Login />;
 }
 
 export default App;
